@@ -1,2 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.pyproj
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+env.bak/
+
+# Environment variables
 .env
 .env.*
+
+# Byte-compiled / optimized / DLL files
+*.so
+*.dll
+*.dylib
+*.egg
+*.egg-info/
+dist/
+build/
+develop-eggs/
+.eggs/
+
+# Testing and coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+nosetests.xml
+test-results/
+tests/__pycache__/
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+logs/
+*.pid
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Cache
+.cache/
+__pycache__/
+.mypy_cache/
+.pyre/
+.dmypy.json
+
+# Compiled / export files
+*.db
+*.sqlite3
+
+# Uvicorn / FastAPI
+*.db-journal
+*.sqlite-journal
+
+# PyInstaller
+*.spec
+
+# Local development artifacts
+*.local
+*.lock

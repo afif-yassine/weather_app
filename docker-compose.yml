@@ -1,10 +1,14 @@
 version: '3'
 
 services:
-    fast_app:
-      build:
-        context: ./fast-api-ml/
-      command: uvicorn main:app --host 0.0.0.0
-      ports:
-        - 8008:8000
-        
+  db:
+    image: postgres:15
+    container_name: weather-db
+    environment:
+      POSTGRES_USER: yassine236589
+      POSTGRES_PASSWORD: yassine986532
+      POSTGRES_DB: weather_data
+    ports:
+      - "5432:5432"             
+    volumes:
+      - pgdata:/var/lib/postgresql/data

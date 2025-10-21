@@ -1,14 +1,16 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
     image: postgres:15
-    container_name: weather-db
     environment:
-      POSTGRES_USER: yassine236589
-      POSTGRES_PASSWORD: yassine986532
-      POSTGRES_DB: weather_data
-    ports:
-      - "5432:5432"             
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: weatherdb
     volumes:
       - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

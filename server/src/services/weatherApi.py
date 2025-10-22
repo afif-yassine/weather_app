@@ -4,9 +4,12 @@ from fastapi import FastAPI, HTTPException
 
 app = FastAPI()
 
+from server.src.core.config import (
+    WEATHER_API_KEY
+)
 BASE_URL = "http://api.weatherapi.com/v1/history.json"  # changed to history endpoint
 
-def fetch_forecast_by_date(city: str, date: str, api_key: str = "07d788f681c0410aa5c132944252110") -> Dict[str, Any]:
+def fetch_forecast_by_date(city: str, date: str, api_key: str = WEATHER_API_KEY) -> Dict[str, Any]:
     """
     Fetch weather data for a given city and date (format: YYYY-MM-DD)
     """

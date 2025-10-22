@@ -3,12 +3,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# database settings
 POSTGRES_USER = os.getenv("POSTGRES_USER")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 POSTGRES_DB = os.getenv("POSTGRES_DB")
 POSTGRES_HOST = os.getenv("POSTGRES_HOST")
 POSTGRES_PORT = os.getenv("POSTGRES_PORT")
 
+# weather api
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+
+# JWT settings
 SECRET_KEY_ACCESS = os.getenv("SECRET_KEY_ACCESS")
 SECRET_KEY_REFRESH = os.getenv("SECRET_KEY_REFRESH")
 ALGORITHM = os.getenv("ALGORITHM")

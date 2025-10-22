@@ -24,3 +24,10 @@ if __name__ == "__main__":
     with engine.connect() as conn:
         result = conn.execute("SELECT 'Connexion OK!'")
         print(result.scalar())
+        
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

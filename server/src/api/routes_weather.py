@@ -3,14 +3,18 @@ Weather API routes.
 Provide endpoints to create and list weather data.
 """
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from server.src.db.base import SessionLocal
 from server.src.schemas.weather_schema import WeatherCreate, WeatherResponse
 from server.src.models.weather_model import Weather
+from server.src.middlewares.auth_middleware import get_current_user, require_role
 
-router = APIRouter(prefix="/weather", tags=["Weather"])
+router = APIRouter(prefix="/weather", tags=["Météo"])
 
+# -----------------------------
+# 🧩 DB Dependency
+# -----------------------------
 def get_db():
     """Dependency to get DB session."""
     db = SessionLocal()
@@ -20,8 +24,20 @@ def get_db():
         db.close()
 
 
-@router.post("/", response_model=WeatherResponse, summary="Add new weather data", response_description="The created weather record.")
-def add_weather(weather: WeatherCreate, db: Session = Depends(get_db)) -> WeatherResponse:
+# -----------------------------
+# ☁️ Ajouter une donnée météo (Rôle 2 uniquement)
+# -----------------------------
+@router.post(
+    "/", 
+    response_model=WeatherResponse, 
+    summary="Add new weather data", 
+    response_description="The created weather record."
+)
+def add_weather(
+    weather: WeatherCreate,
+    db: Session = Depends(get_db),
+    user: dict = Depends(require_role([2]))
+) -> WeatherResponse:
     """
     Create a new weather entry in the database.
 
@@ -36,7 +52,18 @@ def add_weather(weather: WeatherCreate, db: Session = Depends(get_db)) -> Weathe
     return record
 
 
-@router.get("/", response_model=list[WeatherResponse], summary="List all weather data", response_description="List of weather records.")
-def list_weather(db: Session = Depends(get_db)) -> list[WeatherResponse]:
+# -----------------------------
+# 🌤️ Lister les données météo (tous les rôles)
+# -----------------------------
+@router.get(
+    "/", 
+    response_model=list[WeatherResponse], 
+    summary="List all weather data", 
+    response_description="List of weather records."
+)
+def list_weather(
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user)  # Optionnel, selon si tu veux le rendre public ou non
+) -> list[WeatherResponse]:
     """Return all weather entries in the database."""
     return db.query(Weather).all()

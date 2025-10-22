@@ -1,26 +1,35 @@
+# server/src/db/base.py
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from server.src.core.config import (
-    POSTGRES_USER,
-    POSTGRES_PASSWORD,
-    POSTGRES_DB,
-    POSTGRES_HOST,
-    POSTGRES_PORT,
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
+import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Find and load .env at repo root (adjust depth if your tree changes)
+ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
+load_dotenv(dotenv_path=ENV_PATH)
+
+PG_USER = os.getenv("POSTGRES_USER", "user")
+PG_PASS = os.getenv("POSTGRES_PASSWORD", "password")
+PG_DB   = os.getenv("POSTGRES_DB", "weatherdb")
+PG_HOST = os.getenv("POSTGRES_HOST", "localhost")
+PG_PORT = os.getenv("POSTGRES_PORT", "5432")  # <-- default ensures it's never None
+
+# Prefer a ready-made DATABASE_URL if provided
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    f"postgresql+psycopg2://{PG_USER}:{PG_PASS}@{PG_HOST}:{PG_PORT}/{PG_DB}",
 )
 
-DATABASE_URL = (
-    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
-    f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-)
+engine = create_engine(DATABASE_URL, echo=True, future=True)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
 
-engine = create_engine(DATABASE_URL, echo=True)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+class Base(DeclarativeBase):
+    pass
 
-# Base commune pour tous les modèles
-Base = declarative_base()
-
-# Test rapide
-if __name__ == "__main__":
-    with engine.connect() as conn:
-        result = conn.execute("SELECT 'Connexion OK!'")
-        print(result.scalar())
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

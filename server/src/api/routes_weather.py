@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from server.src.db.base import SessionLocal
 from server.src.schemas.weather_schema import WeatherCreate, WeatherResponse
 from server.src.models.weather_model import Weather
+from server.src.services.weatherApi import fetch_forecast_by_date
 
 router = APIRouter(prefix="/weather", tags=["Weather"])
 
@@ -40,3 +41,15 @@ def add_weather(weather: WeatherCreate, db: Session = Depends(get_db)) -> Weathe
 def list_weather(db: Session = Depends(get_db)) -> list[WeatherResponse]:
     """Return all weather entries in the database."""
     return db.query(Weather).all()
+
+
+@router.get("/forecast/{city}/{date}")
+def get_forecast_by_date(city: str, date: str):
+    """
+    Example: GET /forecast/Paris/2024-10-20
+    """
+    try:
+        result = fetch_forecast_by_date(city=city, date=date)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

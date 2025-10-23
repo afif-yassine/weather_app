@@ -3,6 +3,7 @@ from fastapi.openapi.utils import get_openapi
 
 # Import des routers
 from server.src.api.routes_weather import router as weather_router
+from server.src.api.routes_address import router as routes_address
 from server.src.api.routes_auth import router as auth_router
 
 # Import des middlewares
@@ -42,6 +43,7 @@ app = FastAPI(
 # Routes
 # -----------------------------
 app.include_router(auth_router)
+app.include_router(routes_address)
 app.include_router(weather_router)
 
 # -----------------------------

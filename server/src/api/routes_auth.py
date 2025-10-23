@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Path
 from sqlalchemy.orm import Session
 
 from server.src.db.base import get_db
@@ -7,6 +7,7 @@ from server.src.schemas.auth_schema import Token, LoginRequest
 from server.src.services.auth_service import (
     register_user,
     authenticate_user,
+    deactivate_user,
     verify_and_create_new_access_token
 )
 
@@ -25,6 +26,8 @@ def register(data: UserCreate, db: Session = Depends(get_db)):
         db, 
         email=data.email, 
         username=data.username, 
+        age=data.age,
+        sexe=data.sexe,
         password=data.password, 
         role_id=data.role_id
     )
@@ -63,3 +66,23 @@ def refresh_token_endpoint(
             detail="Invalid refresh token"
         )
     return new_token
+
+# -----------------------------
+# 🚫 Désactiver un utilisateur
+# -----------------------------
+@router.patch("/deactivate/{user_id}", response_model=UserResponse)
+def deactivate_user_endpoint(
+    user_id: int = Path(..., description="ID de l'utilisateur à désactiver"),
+    db: Session = Depends(get_db)
+):
+    """
+    Désactive un utilisateur (is_active = False)
+    """
+    try:
+        user_data = deactivate_user(db, user_id)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    return user_data

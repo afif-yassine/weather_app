@@ -1,16 +1,24 @@
-from pydantic import BaseModel, constr
+from pydantic import BaseModel, Field, constr, ConfigDict
+from enum import Enum
+
+class SexeEnum(str, Enum):
+    male = "male"
+    femme = "femme"
 
 class UserBase(BaseModel):
-    email: str
-    username: str
+    email: str = Field(..., json_schema_extra={"example": "user@example.com"})
+    username: str = Field(..., json_schema_extra={"example": "johndoe"})
 
 class UserCreate(UserBase):
     password: constr(min_length=6, max_length=72)
     role_id: int
+    age: int        
+    sexe: SexeEnum  
 
 class UserResponse(UserBase):
     id: int
     role_id: int
+    age: int
+    sexe: SexeEnum
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

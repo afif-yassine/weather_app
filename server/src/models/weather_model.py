@@ -12,6 +12,7 @@ class Weather(Base):
     """SQLAlchemy model for storing weather information."""
 
     __tablename__ = "weather"
+    __table_args__ = {"extend_existing": True} 
 
     id: int = Column(Integer, primary_key=True, index=True)
     city: str = Column(String(50), nullable=False, index=True)

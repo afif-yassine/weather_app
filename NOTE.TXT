@@ -1,0 +1,14 @@
+TABLES :
+    -- User
+        USER (age, sexe , Address)
+        Address (Street , cp, city, country)
+    -- Activity
+        Activity (id, name, description, Categories[], is_outdoor, Trenche_ages(enum), isGroupe, intensity(enum), duration
+            , ideal_temperature_min, ideal_temperature_max, weather_conditions(enum), tags[], location_type(enum),
+            min_age, max_age, accessibility_level(enum), created_at, updated_at
+        ) 
+        Categorie (id, name, description)
+        Tag (id, name, description)
+    -- Weather 
+    -- Vote 
+        

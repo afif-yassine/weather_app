@@ -1,0 +1,73 @@
+from typing import List, Optional
+from datetime import datetime
+from pydantic import BaseModel
+import enum
+
+class IntensityEnum(str, enum.Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+
+class WeatherConditionEnum(str, enum.Enum):
+    sunny = "sunny"
+    rainy = "rainy"
+    cloudy = "cloudy"
+    snowy = "snowy"
+    windy = "windy"
+    foggy = "foggy"
+    stormy = "stormy"
+
+class LocationTypeEnum(str, enum.Enum):
+    indoor = "indoor"
+    outdoor = "outdoor"
+    mixed = "mixed"
+
+class AccessibilityLevelEnum(str, enum.Enum):
+    easy = "easy"
+    moderate = "moderate"
+    hard = "hard"
+
+class CategoryBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class Category(CategoryBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+class TagBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class Tag(TagBase):
+    id: int
+    class Config:
+        orm_mode = True
+
+class ActivityBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+    is_outdoor: Optional[bool] = None
+    is_groupe: Optional[bool] = None
+    intensity: Optional[IntensityEnum] = None
+    duration: Optional[float] = None
+    ideal_temperature_min: Optional[float] = None
+    ideal_temperature_max: Optional[float] = None
+    weather_conditions: Optional[WeatherConditionEnum] = None
+    location_type: Optional[LocationTypeEnum] = None
+    min_age: Optional[int] = None
+    max_age: Optional[int] = None
+    accessibility_level: Optional[AccessibilityLevelEnum] = None
+    categories: Optional[List[Category]] = []
+    tags: Optional[List[Tag]] = []
+
+class ActivityCreate(ActivityBase):
+    pass
+
+class Activity(ActivityBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+    class Config:
+        orm_mode = True

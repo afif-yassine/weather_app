@@ -4,6 +4,9 @@ from fastapi.openapi.utils import get_openapi
 # Import des routers
 from server.src.api.routes_weather import router as weather_router
 from server.src.api.routes_auth import router as auth_router
+from server.src.api.routes_activity import router as activity_router
+from server.src.api.routes_category import router as category_router
+from server.src.api.routes_tag import router as tag_router
 
 # Import des middlewares
 from server.src.middlewares.auth_middleware import jwt_middleware, get_current_user
@@ -43,6 +46,9 @@ app = FastAPI(
 # -----------------------------
 app.include_router(auth_router)
 app.include_router(weather_router)
+app.include_router(activity_router)
+app.include_router(category_router)
+app.include_router(tag_router)
 
 # -----------------------------
 # Root

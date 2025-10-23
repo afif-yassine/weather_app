@@ -1,10 +1,19 @@
 from typing import Dict, Any
 import urllib.request, urllib.parse, json
+from fastapi import FastAPI, HTTPException
 
-BASE_URL = "http://api.weatherapi.com/v1/forecast.json"
+app = FastAPI()
 
-def fetch_forecast(location: str = "paris", days: int = 5, api_key: str = "07d788f681c0410aa5c132944252110") -> Dict[str, Any]:
-    params = {"q": location, "days": str(days), "key": api_key}
+from server.src.core.config import (
+    WEATHER_API_KEY
+)
+BASE_URL = "http://api.weatherapi.com/v1/history.json"  # changed to history endpoint
+
+def fetch_forecast_by_date(city: str, date: str, api_key: str = WEATHER_API_KEY) -> Dict[str, Any]:
+    """
+    Fetch weather data for a given city and date (format: YYYY-MM-DD)
+    """
+    params = {"q": city, "dt": date, "key": api_key}
     url = BASE_URL + "?" + urllib.parse.urlencode(params)
 
     req = urllib.request.Request(url)
@@ -13,21 +22,14 @@ def fetch_forecast(location: str = "paris", days: int = 5, api_key: str = "07d78
             if resp.status != 200:
                 raise RuntimeError(f"HTTP {resp.status} when fetching {url}")
             data = json.loads(resp.read())
-            
-            # Return only necessary info
+
+            # Return simplified structure
             return {
                 "location": {
                     "name": data["location"]["name"],
                     "region": data["location"]["region"],
                     "country": data["location"]["country"],
                     "localtime": data["location"]["localtime"]
-                },
-                "current": {
-                    "temp_c": data["current"]["temp_c"],
-                    "condition": data["current"]["condition"]["text"],
-                    "icon": data["current"]["condition"]["icon"],
-                    "humidity": data["current"]["humidity"],
-                    "wind_kph": data["current"]["wind_kph"]
                 },
                 "forecast": [
                     {

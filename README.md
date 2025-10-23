@@ -164,6 +164,35 @@ docker-compose.yml
 
 ---
 
+## Initialisation des données : `initData.sql`
+
+Le fichier `initData.sql` permet d'initialiser la base de données avec des exemples de catégories, tags et activités, ainsi que leurs relations.
+
+### Ce que fait le script :
+- **Catégories** : Ajoute des catégories types (Sports, Outdoor, Relaxation)
+- **Tags** : Ajoute des tags pour qualifier les activités (Morning, Evening, Group, Solo)
+- **Activités** : Ajoute des exemples d'activités (Hiking, Yoga) avec tous les champs nécessaires
+- **Relations** : Lie les activités à leurs catégories et tags via les tables d'association `activity_category` et `activity_tag`
+
+### Exemple de données insérées :
+- **Hiking** (Randonnée) :
+  - Catégories : Sports, Outdoor
+  - Tags : Morning, Group
+- **Yoga** :
+  - Catégorie : Relaxation
+  - Tags : Evening, Solo
+
+### Utilisation
+Pour peupler la base de données avec ces données de test, exécutez le script dans votre instance PostgreSQL :
+
+```bash
+psql -U <user> -d <database> -f server/initData.sql
+```
+
+Cela permet de démarrer avec des exemples concrets pour tester l’API et l’interface.
+
+---
+
 ## Notes
 
 Tous les endpoints protégés utilisent JWT et peuvent être restreints selon le rôle via require_role([1,2]).

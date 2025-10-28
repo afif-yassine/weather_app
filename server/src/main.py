@@ -14,7 +14,6 @@ from server.src.middlewares.auth_middleware import jwt_middleware, get_current_u
 
 # Import des modèles et base
 from server.src.db.base import Base, engine, SessionLocal
-from server.src.models.weather_model import Base as WeatherBase
 from server.src.models.user_model import Base as UserBase
 from server.src.models.role_model import Base as RoleBase
 from server.src.core.init_roles import init_roles, init_admin

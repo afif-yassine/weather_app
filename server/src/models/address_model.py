@@ -4,7 +4,6 @@ from server.src.db.base import Base
 
 class Address(Base):
     __tablename__ = "addresses"
-    __table_args__ = {"extend_existing": True} 
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)

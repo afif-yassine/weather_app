@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: weatherdb
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./server/initData.sql:/docker-entrypoint-initdb.d/initData.sql
     ports:
       - "5432:5432"
 

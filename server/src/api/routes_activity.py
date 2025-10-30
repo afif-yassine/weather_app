@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from server.src.db.base import SessionLocal
-from server.src.schemas.activity_schema import Activity, ActivityCreate
+from server.src.schemas.activity_schema import Activity, ActivityCreate, ActivityOut
 from server.src.services.activity_service import get_activities, get_activity, create_activity, delete_activity
 from server.src.middlewares.auth_middleware import require_role
-from server.src.models.activity_model import ActivityOut
 
 router = APIRouter(prefix="/activities", tags=["activities"])
 

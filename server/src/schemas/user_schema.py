@@ -1,9 +1,5 @@
 from pydantic import BaseModel, Field, constr, ConfigDict
-from enum import Enum
-
-class SexeEnum(str, Enum):
-    male = "male"
-    femme = "femme"
+from server.src.enums.user_enums import SexeEnum
 
 class UserBase(BaseModel):
     email: str = Field(..., json_schema_extra={"example": "user@example.com"})

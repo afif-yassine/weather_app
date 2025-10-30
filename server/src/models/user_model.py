@@ -2,11 +2,9 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from server.src.db.base import Base
 from server.src.models.address_model import Address
+from .history_model import History
+from server.src.enums.user_enums import SexeEnum 
 import enum
-
-class SexeEnum(enum.Enum):
-    male = "male"
-    femme = "femme"
 
 class User(Base):
     __tablename__ = "users"
@@ -15,10 +13,13 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    age = Column(String, unique=True, index=True, nullable=True)
+    age = Column(Integer, nullable=True)
     sexe = Column(Enum(SexeEnum), nullable=True)
     is_active = Column(Boolean, default=True)
     role_id = Column(Integer, ForeignKey("roles.id"))
 
     role = relationship("Role", back_populates="users")
     addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")
+    history = relationship("History", back_populates="user", cascade="all, delete-orphan")
+
+

@@ -3,37 +3,11 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from server.src.db.base import Base
-import enum
+from .history_model import History
 from datetime import datetime
-
-# ------------------ ENUMS ------------------
-
-class IntensityEnum(str, enum.Enum):
-    low = "low"
-    medium = "medium"
-    high = "high"
-
-class WeatherConditionEnum(str, enum.Enum):
-    sunny = "sunny"
-    rainy = "rainy"
-    cloudy = "cloudy"
-    snowy = "snowy"
-    windy = "windy"
-    foggy = "foggy"
-    stormy = "stormy"
-
-class LocationTypeEnum(str, enum.Enum):
-    indoor = "indoor"
-    outdoor = "outdoor"
-    mixed = "mixed"
-
-class AccessibilityLevelEnum(str, enum.Enum):
-    easy = "easy"
-    moderate = "moderate"
-    hard = "hard"
+from server.src.enums.activity_enums import IntensityEnum, WeatherConditionEnum, LocationTypeEnum, AccessibilityLevelEnum
 
 # ------------------ ASSOCIATION TABLES ------------------
-
 activity_category = Table(
     "activity_category",
     Base.metadata,
@@ -72,6 +46,8 @@ class Activity(Base):
 
     categories = relationship("Category", secondary=activity_category, back_populates="activities")
     tags = relationship("Tag", secondary=activity_tag, back_populates="activities")
+    history = relationship("History", back_populates="activity", cascade="all, delete-orphan")
+
 
 class Category(Base):
     __tablename__ = "category"
@@ -87,12 +63,9 @@ class Tag(Base):
     description = Column(String, nullable=True)
     activities = relationship("Activity", secondary=activity_tag, back_populates="tags")
 
-
-# ------------------ Pydantic Schemas ------------------
 from pydantic import BaseModel
 from typing import List, Optional
 
-# For output (full objects)
 class CategoryOut(BaseModel):
     id: int
     name: str
@@ -108,42 +81,3 @@ class TagOut(BaseModel):
 
     class Config:
         orm_mode = True
-
-class ActivityOut(BaseModel):
-    id: int
-    name: str
-    description: Optional[str]
-    is_outdoor: Optional[bool]
-    is_groupe: Optional[bool]
-    intensity: Optional[IntensityEnum]
-    duration: Optional[float]
-    ideal_temperature_min: Optional[float]
-    ideal_temperature_max: Optional[float]
-    weather_conditions: Optional[WeatherConditionEnum]
-    location_type: Optional[LocationTypeEnum]
-    min_age: Optional[int]
-    max_age: Optional[int]
-    accessibility_level: Optional[AccessibilityLevelEnum]
-    categories: Optional[List[CategoryOut]] = []
-    tags: Optional[List[TagOut]] = []
-
-    class Config:
-        orm_mode = True
-
-# For input (only IDs for categories/tags)
-class ActivityCreate(BaseModel):
-    name: str
-    description: Optional[str]
-    is_outdoor: Optional[bool]
-    is_groupe: Optional[bool]
-    intensity: Optional[IntensityEnum]
-    duration: Optional[float]
-    ideal_temperature_min: Optional[float]
-    ideal_temperature_max: Optional[float]
-    weather_conditions: Optional[WeatherConditionEnum]
-    location_type: Optional[LocationTypeEnum]
-    min_age: Optional[int]
-    max_age: Optional[int]
-    accessibility_level: Optional[AccessibilityLevelEnum]
-    categories: Optional[List[int]] = []
-    tags: Optional[List[int]] = []

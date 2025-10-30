@@ -3,10 +3,12 @@ from fastapi.openapi.utils import get_openapi
 
 # Import des routers
 from server.src.api.routes_weather import router as weather_router
+from server.src.api.routes_recommendation import router as routes_recommendation
 from server.src.api.routes_address import router as routes_address
 from server.src.api.routes_auth import router as auth_router
 from server.src.api.routes_activity import router as activity_router
 from server.src.api.routes_category import router as category_router
+from server.src.api.routes_history import router as routes_history
 from server.src.api.routes_tag import router as tag_router
 
 # Import des middlewares
@@ -50,6 +52,8 @@ app.include_router(weather_router)
 app.include_router(activity_router)
 app.include_router(category_router)
 app.include_router(tag_router)
+app.include_router(routes_recommendation)
+app.include_router(routes_history)
 
 # -----------------------------
 # Root

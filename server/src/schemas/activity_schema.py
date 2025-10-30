@@ -2,6 +2,8 @@ from typing import List, Optional
 from datetime import datetime
 from pydantic import BaseModel
 import enum
+from server.src.enums.activity_enums import IntensityEnum, WeatherConditionEnum, LocationTypeEnum, AccessibilityLevelEnum
+
 
 class IntensityEnum(str, enum.Enum):
     low = "low"
@@ -67,6 +69,8 @@ class ActivityBase(BaseModel):
     min_age: Optional[int] = None
     max_age: Optional[int] = None
     accessibility_level: Optional[AccessibilityLevelEnum] = None
+    categories: Optional[List[int]] = []
+    tags: Optional[List[int]] = []
 
 
 # ✅ The input payload expects lists of IDs, not objects
@@ -85,3 +89,26 @@ class Activity(ActivityBase):
 
     class Config:
         orm_mode = True
+
+class ActivityOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    is_outdoor: Optional[bool]
+    is_groupe: Optional[bool]
+    intensity: Optional[IntensityEnum]
+    duration: Optional[float]
+    ideal_temperature_min: Optional[float]
+    ideal_temperature_max: Optional[float]
+    weather_conditions: Optional[WeatherConditionEnum]
+    location_type: Optional[LocationTypeEnum]
+    min_age: Optional[int]
+    max_age: Optional[int]
+    accessibility_level: Optional[AccessibilityLevelEnum]
+    categories: Optional[List[Category]] = []
+    tags: Optional[List[Tag]] = []
+
+    class Config:
+        orm_mode = True
+
+# For input (only IDs for categories/tags)

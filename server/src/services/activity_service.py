@@ -25,12 +25,14 @@ def create_activity(db: Session, activity: ActivityCreate) -> Activity:
         max_age=activity.max_age,
         accessibility_level=activity.accessibility_level,
     )
-    # Assign categories by IDs
+
+    # ✅ Assign by ID
     if activity.categories:
         db_activity.categories = db.query(Category).filter(Category.id.in_(activity.categories)).all()
-    # Assign tags by IDs
+
     if activity.tags:
         db_activity.tags = db.query(Tag).filter(Tag.id.in_(activity.tags)).all()
+
     db.add(db_activity)
     db.commit()
     db.refresh(db_activity)

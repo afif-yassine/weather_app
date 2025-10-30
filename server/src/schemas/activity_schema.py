@@ -29,6 +29,10 @@ class AccessibilityLevelEnum(str, enum.Enum):
     moderate = "moderate"
     hard = "hard"
 
+
+# ----------------------------
+# Category and Tag Schemas
+# ----------------------------
 class CategoryBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -47,6 +51,10 @@ class Tag(TagBase):
     class Config:
         orm_mode = True
 
+
+# ----------------------------
+# Activity Schemas
+# ----------------------------
 class ActivityBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -64,13 +72,21 @@ class ActivityBase(BaseModel):
     categories: Optional[List[int]] = []
     tags: Optional[List[int]] = []
 
-class ActivityCreate(ActivityBase):
-    pass
 
+# ✅ The input payload expects lists of IDs, not objects
+class ActivityCreate(ActivityBase):
+    categories: Optional[List[int]] = []
+    tags: Optional[List[int]] = []
+
+
+# For reading from DB (response)
 class Activity(ActivityBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    categories: List[Category] = []
+    tags: List[Tag] = []
+
     class Config:
         orm_mode = True
 

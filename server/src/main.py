@@ -8,6 +8,7 @@ from server.src.api.routes_auth import router as auth_router
 from server.src.api.routes_activity import router as activity_router
 from server.src.api.routes_category import router as category_router
 from server.src.api.routes_tag import router as tag_router
+from server.src.api.routes_preference import router as preference_router
 
 # Import des middlewares
 from server.src.middlewares.auth_middleware import jwt_middleware, get_current_user
@@ -50,7 +51,7 @@ app.include_router(weather_router)
 app.include_router(activity_router)
 app.include_router(category_router)
 app.include_router(tag_router)
-
+app.include_router(preference_router)
 # -----------------------------
 # Root
 # -----------------------------

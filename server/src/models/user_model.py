@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from server.src.db.base import Base
-from server.src.models.address_model import Address
 import enum
 
 class SexeEnum(enum.Enum):
@@ -22,3 +21,4 @@ class User(Base):
 
     role = relationship("Role", back_populates="users")
     addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")
+    ballots = relationship("Ballot", back_populates="user", cascade="all, delete-orphan")

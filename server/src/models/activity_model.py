@@ -70,6 +70,10 @@ class Activity(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    ########!!!
+    session_id = Column(String, index=True, nullable=True)  
+    ########!!!
+    
     categories = relationship("Category", secondary=activity_category, back_populates="activities")
     tags = relationship("Tag", secondary=activity_tag, back_populates="activities")
 

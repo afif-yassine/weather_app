@@ -9,7 +9,9 @@ from sqlalchemy import pool
 
 from alembic import context
 from server.src.db.base import Base
-from server.src.models import *
+import server.src.models.activity_model
+import server.src.models.preference_model
+import server.src.models.user_model
 
 target_metadata = Base.metadata
 

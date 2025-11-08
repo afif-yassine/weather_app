@@ -8,7 +8,11 @@ sphinx-autodoc-typehints
 alembic
 python-jose
 passlib[bcrypt]
+<<<<<<< HEAD
 "bcrypt>=4.0.1"
+=======
+bcrypt
+>>>>>>> 13f5ca9c1b0936ae9bb597d1b6fa47784cf055b0
 pytest 
 pytest-asyncio 
 httpx

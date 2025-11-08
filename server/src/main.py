@@ -3,10 +3,12 @@ from fastapi.openapi.utils import get_openapi
 
 # Import des routers
 from server.src.api.routes_weather import router as weather_router
+from server.src.api.routes_recommendation import router as routes_recommendation
 from server.src.api.routes_address import router as routes_address
 from server.src.api.routes_auth import router as auth_router
 from server.src.api.routes_activity import router as activity_router
 from server.src.api.routes_category import router as category_router
+from server.src.api.routes_history import router as routes_history
 from server.src.api.routes_tag import router as tag_router
 from server.src.api.routes_preference import router as preference_router
 
@@ -32,9 +34,7 @@ db.close()
 # 🚀 App FastAPI
 # -----------------------------
 app = FastAPI(
-    title="Weather API",
-    version="1.0",
-    description="API météo 🌦️ avec JWT et rôles"
+    title="Weather API", version="1.0", description="API météo 🌦️ avec JWT et rôles"
 )
 
 # -----------------------------
@@ -52,12 +52,17 @@ app.include_router(activity_router)
 app.include_router(category_router)
 app.include_router(tag_router)
 app.include_router(preference_router)
+app.include_router(routes_recommendation)
+app.include_router(routes_history)
+
+
 # -----------------------------
 # Root
 # -----------------------------
 @app.get("/")
 def root():
     return {"message": "Bienvenue sur l'API météo 🌦️ avec Auth 🔐"}
+
 
 # -----------------------------
 # Swagger : ajout du Bearer token
@@ -75,11 +80,7 @@ def custom_openapi():
 
     # Définir le schéma de sécurité global
     openapi_schema["components"]["securitySchemes"] = {
-        "BearerAuth": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT"
-        }
+        "BearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
     }
 
     # Appliquer BearerAuth sur toutes les routes sauf /auth/*
@@ -90,5 +91,6 @@ def custom_openapi():
 
     app.openapi_schema = openapi_schema
     return app.openapi_schema
+
 
 app.openapi = custom_openapi

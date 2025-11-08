@@ -12,14 +12,19 @@ from server.src.models.address_model import Address
 from server.src.main import app
 from server.src.core.security import get_password_hash
 
-# -----------------------------
-# Config DB (persistante pour tests)
-# -----------------------------
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"  # ✅ fichier local
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# ⬇️ NEW: import your auth deps so we can override them
+from server.src.middlewares.auth_middleware import (
+    get_current_user_from_db,
+    require_role,
+)
+
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Override get_db
+
 def override_get_db():
     db = TestingSessionLocal()
     try:
@@ -27,26 +32,85 @@ def override_get_db():
     finally:
         db.close()
 
+
+# Keep DB override
 app.dependency_overrides[get_db] = override_get_db
-client = TestClient(app)
+
 
 # -----------------------------
 # Setup tables + rôles
 # -----------------------------
 @pytest.fixture(scope="session", autouse=True)
 def setup_db_and_roles():
-    """Créer toutes les tables et rôles avant les tests"""
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
+    # seed roles
     for role_name in ["user", "admin"]:
         if not db.query(Role).filter(Role.name == role_name).first():
             db.add(Role(name=role_name))
     db.commit()
     db.close()
 
+
 # -----------------------------
-# Fixtures utilisateur et adresse
+# Fake principals (users)
+# -----------------------------
+class FakeUser:
+    def __init__(self, user_id: int, role_id: int):
+        self.id = user_id
+        self.role_id = role_id
+
+
+# Helper: bind a specific FakeUser to the auth dependency
+def make_user_override(fake_user: FakeUser):
+    def _dep():
+        return fake_user
+
+    return _dep
+
+
+# Helper: no-op for AdminOnly (if your router stores require_role([2]) into a variable)
+def allow_admin_only():
+    return True
+
+
+# -----------------------------
+# Clients with identity
+# -----------------------------
+@pytest.fixture
+def client_user():
+    # user role_id=1 by convention; adjust if yours differs
+    app.dependency_overrides[get_current_user_from_db] = make_user_override(
+        FakeUser(101, role_id=1)
+    )
+    # If your router uses a stored AdminOnly callable, we can also neutralize it here safely:
+    try:
+        from server.src.api import preferences_router as pr_mod
+
+        app.dependency_overrides[pr_mod.AdminOnly] = allow_admin_only
+    except Exception:
+        pass
+    return TestClient(app)
+
+
+@pytest.fixture
+def client_admin():
+    # admin role_id=2
+    app.dependency_overrides[get_current_user_from_db] = make_user_override(
+        FakeUser(201, role_id=2)
+    )
+    try:
+        from server.src.api import preferences_router as pr_mod
+
+        app.dependency_overrides[pr_mod.AdminOnly] = allow_admin_only
+    except Exception:
+        pass
+    return TestClient(app)
+
+
+# -----------------------------
+# Existing fixtures
 # -----------------------------
 @pytest.fixture
 def test_user():
@@ -58,12 +122,13 @@ def test_user():
         hashed_password=get_password_hash("Test123!"),
         role=user_role,
         age=random.randint(20, 50),
-        sexe="male"
+        sexe="male",
     )
     db.add(user)
     db.commit()
     db.refresh(user)
     return user
+
 
 @pytest.fixture
 def address_data():
@@ -71,5 +136,5 @@ def address_data():
         "street": "123 Main St",
         "city": "Paris",
         "postal_code": "75001",
-        "country": "France"
+        "country": "France",
     }

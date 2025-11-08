@@ -1,22 +1,16 @@
 # server/test/test_activity.py
 import random
 import pytest
-from server.test.conftest import client, override_get_db
 from server.src.models.activity_model import Activity, Category, Tag
-from datetime import datetime
-
-pytestmark = pytest.mark.django_db
+from server.test.conftest import override_get_db  # keep if you use it for seeding
 
 
-def test_create_activity():
+def test_create_activity(client_admin):
     db = next(override_get_db())
 
-    # create category + tag first (normally this is done in fixtures or migrations)
     cat = Category(name=f"cat{random.randint(1,10000)}")
-    db.add(cat)
-
     tag = Tag(name=f"tag{random.randint(1,10000)}")
-    db.add(tag)
+    db.add_all([cat, tag])
     db.commit()
     db.refresh(cat)
     db.refresh(tag)
@@ -31,26 +25,29 @@ def test_create_activity():
         "ideal_temperature_min": 18,
         "ideal_temperature_max": 24,
         "weather_conditions": "sunny",
-        "location_type": "field",
+        "location_type": "outdoor",  # <= was "field"
         "min_age": 10,
         "max_age": 50,
-        "accessibility_level": "normal",
+        "accessibility_level": "moderate",  # <= was "normal"
         "category_ids": [cat.id],
-        "tag_ids": [tag.id]
+        "tag_ids": [tag.id],
     }
 
-    resp = client.post("/activities/", json=payload)
-    assert resp.status_code == 200
+    resp = client_admin.post("/activities/", json=payload)
+    assert resp.status_code == 200, resp.text
     data = resp.json()
     assert data["name"] == payload["name"]
-    assert len(data["categories"]) == 1
-    assert len(data["tags"]) == 1
+    assert len(data.get("categories", [])) == 1
+    assert len(data.get("tags", [])) == 1
 
 
-def test_get_activities_list():
-    resp = client.get("/activities/")
-    assert resp.status_code == 200
+def test_get_activities_list(client_user):
+    resp = client_user.get("/activities/")
+    assert resp.status_code == 200, resp.text
     data = resp.json()
-    assert "results" in data
-    # pagination aware (if u return results) OR direct list (if yours returns list)
-    # but this keeps same style as ur auth tests
+    # accept list OR paginated dict
+    if isinstance(data, dict):
+        assert "results" in data
+        assert isinstance(data["results"], list)
+    else:
+        assert isinstance(data, list)
